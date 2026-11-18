@@ -1,10 +1,10 @@
 {
- "softmax": "softmax, z sub i, equals e to the power z sub i over the sum from j equals 1 to n of e to the power z sub j",
- "relu": "y hat equals R e L U, W x plus b,",
- "layernorm": "layer norm, x, equals gamma times, x minus mu over the square root of sigma squared plus epsilon,",
- "limsup-inf-sup": "the limit superior as n goes to infinity of a sub n equals the infimum over n of the supremum over k greater than or equal to n of a sub k",
- "kernel-trace-rank": "the kernel of A, equals the set containing 0, the trace of A, equals the sum from i equals 1 to n of lambda sub i, the rank of A equals 3",
- "diag-sign": "the diagonal of v times the sign of v is greater than or equal to 0",
+ "softmax": "softmax, z sub i, equals e to the power z sub i over the sum from j equals 1 to n of e to the power z sub j,",
+ "relu": "y hat equals ReLU, W x plus b,",
+ "layernorm": "layer norm, x, equals gamma times, x minus mu, over the square root of sigma squared plus epsilon,",
+ "limsup-inf-sup": "the limit superior as n goes to infinity of a sub n, equals the infimum over n of the supremum over k greater than or equal to n of a sub k",
+ "kernel-trace-rank": "the kernel of A equals the set containing only 0, the trace of A equals the sum from i equals 1 to n of lambda sub i, and the rank of A equals 3",
+ "diag-sign": "the diagonal of v, times the sign of v, is greater than or equal to 0",
  "pmod": "a is congruent to b modulo n",
- "binom": "the probability that X equals k, equals the binomial coefficient n choose k, p to the power k, 1 minus p to the power n minus k"
+ "binom": "the probability that X equals k is the number of n choose k, p to the power k, times 1 minus p, to the power n minus k"
 }

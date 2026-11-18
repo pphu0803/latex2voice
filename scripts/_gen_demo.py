@@ -35,6 +35,9 @@ def tn(latex: str) -> str:
     return tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True).strip()
 
 
+# spelling fixes for known TN mispellings (audio + caption stay consistent)
+SPELL_FIX = {"supremus": "supremum", "infinum": "infimum"}
+
 FORMULAS = [
     ("softmax", r"\operatorname{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{n} e^{z_j}}",
      "softmax(z)_i = e^{z_i} / Σ_{j=1..n} e^{z_j}"),
@@ -59,6 +62,8 @@ import json  # noqa: E402
 spoken_map = {}
 for name, latex, _display in FORMULAS:
     spoken = tn(latex)
+    for bad, good in SPELL_FIX.items():
+        spoken = spoken.replace(bad, good)
     wav = OUT / f"{name}.wav"
     synthesize(spoken, str(wav))
     spoken_map[name] = spoken
