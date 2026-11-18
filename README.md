@@ -1,67 +1,115 @@
-# latex-tts
+# latex2voice
 
-让 TTS 流畅朗读 LaTeX 数学公式（英语优先）。本地离线部署。
+[![Live demo](https://img.shields.io/badge/demo-demo.latex2voice.dev-8c1d18)](https://demo.latex2voice.dev)
+[![Hugging Face weights](https://img.shields.io/badge/%F0%9F%A4%97-weights-ffb200)](https://huggingface.co/petehu0803/latex2voice)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
-## 架构
+**Make any TTS read math like a mathematician.** A LoRA-tuned text-normalization
+front end converts LaTeX into fluent spoken English, then hands it to any
+TTS engine — fully offline.
 
-```
-LaTeX 文本
-   │
-   ▼
-[TN 模块]  Qwen3-4B LoRA 微调：LaTeX → 英语大白话朗读文本
-   │         "x^2 + y^2 = z^2" → "x squared plus y squared equals z squared"
-   ▼
-[TTS]      Kokoro-82M（本地离线，英语）
-   │
-   ▼
-音频
-   │
-   ▼
-[ASR]      whisper-large-v3-turbo（回转评测）
-   │
-   ▼
-转写文本 ──→ 与原公式语义比对（sympy 等价 / LLM judge）→ 按难度 L1-L4 报告通过率
+```text
+"\limsup_{n \to \infty} a_n"
+    → "the limit superior as n goes to infinity of a sub n"
+
+"a \equiv b \pmod{n}"
+    → "a is congruent to b modulo n"
+
+"\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}"
+    → "the 2 by 2 matrix with, first row 1, 2, and second row 3, 4"
 ```
 
-核心立场：**不微调 TTS 本体**。公式读不好是前端不认识 LaTeX，拆成 TN 文本任务用小模型解决。
+Stock TTS reads `\limsup_{n \to \infty} a_n` as *"backslash lim sup underscore…"*
+— or silence. That breaks paper audiobooks, screen-reader access to lecture
+notes, and video voice-overs. latex2voice fixes it at the **text layer**, so
+the TTS engine stays hot-swappable (Kokoro, Piper, commercial APIs — anything
+that reads English).
 
-## 目录
+## How it works
+
+```
+LaTeX ──▶ TN module (Qwen3-4B + LoRA) ──▶ spoken English ──▶ any TTS ──▶ audio
+              ▲ fully synthetic training data
+```
+
+Why a TN front-end instead of fine-tuning TTS: math→words is a pure
+text-to-text task. A small LLM with a LoRA solves it with no audio data,
+no per-engine retraining, ~40 minutes of training on a consumer GPU.
+
+## Results
+
+Training: 6,272 fully synthetic pairs (difficulty levels L1–L4 + 400
+plain-text guard samples). Zero human annotations.
+
+| Check | Result |
+|---|---|
+| Symbol coverage audit (143 cases, incl. full amsmath `\DeclareMathOperator` set) | rules 143/143 · model 133/143 (rest = variant readings) |
+| Held-out formulas L1–L3 (exact match) | 75/75 |
+| Held-out formulas L4 (LLM-judged) | 25/25 |
+| Guard: plain text passes through unchanged | 30/30 |
+| End-to-end round-trip (TTS → Whisper → judge) | spot-checked, see demo |
+
+## Try it
+
+```python
+from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-4B", dtype=torch.bfloat16, device_map="auto")
+model = PeftModel.from_pretrained(base, "petehu0803/latex2voice")
+tok = AutoTokenizer.from_pretrained("Qwen/Qwen3-4B")
+
+SYSTEM = ("You convert LaTeX math into fluent English spoken form (what a person "
+          "reading the formula aloud would say). If the text contains no LaTeX math, "
+          "output it unchanged. Output ONLY the resulting text.")
+USER = "Convert this LaTeX to spoken English:\n{latex}"
+
+prompt = tok.apply_chat_template(
+    [{"role": "system", "content": SYSTEM},
+     {"role": "user", "content": USER.format(latex=r"\limsup_{n \to \infty} a_n")}],
+    tokenize=False, add_generation_prompt=True, enable_thinking=False,
+)
+ids = tok(prompt, return_tensors="pt", add_special_tokens=False).input_ids.to(model.device)
+out = model.generate(ids, max_new_tokens=120, do_sample=False)
+print(tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True).strip())
+# the limit superior as n goes to infinity of a sub n
+```
+
+> `enable_thinking=False` is required — Qwen3-4B is a thinking model and the
+> adapter is trained for direct answers.
+
+~2 GB RAM runtime, ~3–6 s per formula on CPU only.
+
+## Repo layout
 
 ```
 src/latextts/
-  formula_gen.py    # 公式生成器（L1-L4 难度分级）
-  tn_data.py        # TN 训练数据合成（公式+canonical 读法对）
-  rules_en.py       # LaTeX→英语朗读规则库（核心资产）
-  tn_infer.py       # TN 推理（LoRA 加载）
-  tts_kokoro.py     # Kokoro TTS 封装
-  asr_whisper.py    # Whisper 回转封装
-  eval_roundtrip.py # 端到端评测（sympy 等价 + 守卫）
+  rules_en.py       # rule-based LaTeX→English library (training gold, 143/143 audited)
+  formula_gen.py    # formula generators, difficulty levels L1–L4
+  tn_data.py        # synthetic TN training data builder
+  train/eval via scripts/
 scripts/
-  demo_tier0.py     # 0 档 demo：规则 TN → TTS → ASR → 比对
-  download_models.py# ModelScope 下载 Qwen3-4B / Kokoro
-configs/
-  difficulty.yaml   # 难度分级定义
-data/
-  formulas/         # 生成的公式集（jsonl）
-  tn_train/         # TN 训练数据
-  tn_eval/          # 评测集
-  audio/            # TTS 音频输出
-models/             # 本地模型权重落点
+  train_tn.py       # hand-written SFT loop (LoRA r=32, q/k/v/o)
+  eval_tn.py        # held-out eval: exact match + LLM judge
+  _coverage_audit.py# 143-case symbol coverage audit (rules layer)
+  _model_audit.py   # model-layer audit with variant tolerance
+  _gen_demo.py      # demo audio generation
+  _gen_baseline.py  # stock-TTS baseline clips (the "Before" half)
+data/               # generated formulas + training sets (jsonl)
+demo/               # static demo page + audio (deployed at demo.latex2voice.dev)
 ```
 
-## 模型清单
+## Known limitations
 
-| 用途 | 模型 | 状态 |
-|---|---|---|
-| ASR 回转评测 | whisper-large-v3-turbo | ✅ 本机 HF 缓存已有（3.1G） |
-| TN 基座 | Qwen3-4B | 待下载（ModelScope） |
-| TTS | Kokoro-82M | 待下载（HF） |
-| TN 训练 | LoRA r=32 | 本机 8060S |
+- English only; Chinese planned.
+- Known gaps: `\vec{v}` occasionally hallucinated ("velocity"), `\nabla \cdot`
+  not reliably read as "divergence", `\dots` sometimes output literally,
+  `\odot` not learned.
+- Single-letter formulas are homophone-ambiguous when spoken ("c" = "see") —
+  a property of speech, not a bug.
 
-## 快速开始
+## Links
 
-```bash
-cd /c/Code/latex-tts
-python -m src.latextts.formula_gen --level L1 --n 20   # 生成公式
-python scripts/demo_tier0.py                            # 0 档 demo
-```
+- 🎧 Live demo: <https://demo.latex2voice.dev>
+- 🤗 Weights: <https://huggingface.co/petehu0803/latex2voice>
