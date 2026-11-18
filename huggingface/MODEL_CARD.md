@@ -13,7 +13,7 @@ pipeline_tag: text2text-generation
 library_name: peft
 ---
 
-# latex-tts-tn: LaTeX → Spoken English for TTS front-ends
+# latex2voice: LaTeX → Spoken English for TTS front-ends
 
 A LoRA adapter for **Qwen3-4B** that converts LaTeX math into fluent English
 spoken form — the text a person reading the formula aloud would say. It is a
@@ -24,6 +24,7 @@ words first.
 ```
 "x^2 + y^2 = z^2"  →  "x squared plus y squared equals z squared"
 "\int_0^\infty \frac{1}{x^2} dx"  →  "the integral from 0 to infinity of 1 over x squared, dx"
+"\limsup_{n \to \infty} a_n"  →  "the limit superior as n goes to infinity of a sub n"
 "\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}"  →  "the 2 by 2 matrix with, first row 1, 2, and second row 3, 4"
 ```
 
@@ -31,7 +32,8 @@ words first.
 
 TTS engines already speak English well; what they lack is LaTeX literacy.
 Converting math to words is a pure text-to-text task, so a small LLM with a
-LoRA solves it — no audio data, no TTS retraining, fully offline.
+LoRA solves it — no audio data, no TTS retraining, fully offline, and the
+TTS engine stays hot-swappable (Kokoro, Piper, commercial APIs).
 
 ## Usage
 
@@ -40,8 +42,8 @@ from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-4B", torch_dtype=torch.bfloat16, device_map="auto")
-model = PeftModel.from_pretrained(base, "YOUR_USERNAME/latex-tts-tn")
+base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-4B", dtype=torch.bfloat16, device_map="auto")
+model = PeftModel.from_pretrained(base, "pphu0803/latex2voice")
 tok = AutoTokenizer.from_pretrained("Qwen/Qwen3-4B")
 
 SYSTEM = ("You convert LaTeX math into fluent English spoken form (what a person "
@@ -72,6 +74,9 @@ the adapter is trained for direct answers.
   integrals, derivatives), L3 (matrices, piecewise functions, norms), L4
   (formulas embedded in English sentences), plus 400 identity samples of
   plain text (guard behavior: text without math passes through unchanged)
+- Function/operator names follow the amsmath `\DeclareMathOperator` list
+  (30 operators) plus common named operators (`softmax`, `ReLU`,
+  `LayerNorm`, …) via `\operatorname{}` / `\mathrm{}` passthrough
 - Parenthesized expressions under an exponent are read with explicit
   grouping ("the quantity a plus b, squared") so `(a+b)^2` is never
   misread as `a + b^2`
@@ -80,22 +85,31 @@ the adapter is trained for direct answers.
 
 Three-layer protocol (all reproducible from the repo):
 
-1. **Held-out formulas** (seed-separated from training): L1–L4 100/100
-   accepted — L1–L3 by exact text match, L4 by LLM-judged semantic
+1. **Symbol coverage audit** — 143 cases: Greek (upper/lower), relations,
+   logic, arrows, calculus, functions, physics notation, fonts, and the
+   full amsmath `\DeclareMathOperator` set. Rules layer 143/143; model
+   layer 133/143, of which the remaining misses are mostly legitimate
+   variant readings ("is congruent to" for `\equiv`).
+2. **Held-out formulas** (seed-separated from training): 100/100 accepted —
+   L1–L3 by exact text match (25/25 each), L4 by LLM-judged semantic
    equivalence (local Qwen3-8B judge allows legitimate variant readings).
-2. **Round-trip**: TTS (Kokoro-82M) → Whisper ASR → semantic match,
-   37/40 end-to-end; the 3 failures are ASR homophone errors ("c over u"
-   heard as "see over you"), not reading errors.
 3. **Guard**: plain text without math passes through unchanged, 30/30.
+4. **Round-trip** (spot checks): TTS (Kokoro-82M) → Whisper ASR → LLM
+   judge on semantic match. ASR homophone errors ("c over u" heard as
+   "see over you") are out of scope by design.
 
 ## Known limitations
 
-- English only; canonical readings are the generators' mainstream choices.
-- Coverage follows the training distribution; unusual LaTeX (accents like
-  `\hat`, deep exponent nesting) is not exhaustively verified.
+- English only; Chinese is planned.
+- Canonical readings are the mainstream choices of the generators; rare
+  LaTeX outside the audited 143-case distribution may degrade.
+- Known gaps: `\vec{v}` sometimes semantically hallucinated ("velocity"),
+  `\nabla \cdot` not reliably read as "divergence", `\dots` occasionally
+  output literally.
 - Single-letter formulas are homophone-ambiguous when spoken ("c" = "see");
   this is a property of speech, not a bug.
 
 ## Links
 
-- Code, data generators and evaluation scripts: (repo URL)
+- Code, data generators, evaluation scripts and a live demo:
+  https://github.com/pphu0803/latex2voice

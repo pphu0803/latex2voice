@@ -1,207 +1,115 @@
 ---
-base_model: H:\SHARE\latex-tts\models\Qwen3-4B
-library_name: peft
-pipeline_tag: text-generation
+license: apache-2.0
+base_model: Qwen/Qwen3-4B
 tags:
-- base_model:adapter:H:\SHARE\latex-tts\models\Qwen3-4B
-- lora
-- transformers
+- latex
+- text-normalization
+- tts-frontend
+- math
+- asr
+language:
+- en
+pipeline_tag: text2text-generation
+library_name: peft
 ---
 
-# Model Card for Model ID
+# latex2voice: LaTeX → Spoken English for TTS front-ends
 
-<!-- Provide a quick summary of what the model is/does. -->
+A LoRA adapter for **Qwen3-4B** that converts LaTeX math into fluent English
+spoken form — the text a person reading the formula aloud would say. It is a
+drop-in **text-normalization front-end for TTS**: most TTS engines read plain
+English fluently but choke on `x^2 + y^2`; this module rewrites the math into
+words first.
 
+```
+"x^2 + y^2 = z^2"  →  "x squared plus y squared equals z squared"
+"\int_0^\infty \frac{1}{x^2} dx"  →  "the integral from 0 to infinity of 1 over x squared, dx"
+"\limsup_{n \to \infty} a_n"  →  "the limit superior as n goes to infinity of a sub n"
+"\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}"  →  "the 2 by 2 matrix with, first row 1, 2, and second row 3, 4"
+```
 
+## Why a TN front-end instead of fine-tuning TTS
 
-## Model Details
+TTS engines already speak English well; what they lack is LaTeX literacy.
+Converting math to words is a pure text-to-text task, so a small LLM with a
+LoRA solves it — no audio data, no TTS retraining, fully offline, and the
+TTS engine stays hot-swappable (Kokoro, Piper, commercial APIs).
 
-### Model Description
+## Usage
 
-<!-- Provide a longer summary of what this model is. -->
+```python
+from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
 
+base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-4B", dtype=torch.bfloat16, device_map="auto")
+model = PeftModel.from_pretrained(base, "pphu0803/latex2voice")
+tok = AutoTokenizer.from_pretrained("Qwen/Qwen3-4B")
 
+SYSTEM = ("You convert LaTeX math into fluent English spoken form (what a person "
+          "reading the formula aloud would say). If the text contains no LaTeX math, "
+          "output it unchanged. Output ONLY the resulting text.")
+USER = "Convert this LaTeX to spoken English:\n{latex}"
 
-- **Developed by:** [More Information Needed]
-- **Funded by [optional]:** [More Information Needed]
-- **Shared by [optional]:** [More Information Needed]
-- **Model type:** [More Information Needed]
-- **Language(s) (NLP):** [More Information Needed]
-- **License:** [More Information Needed]
-- **Finetuned from model [optional]:** [More Information Needed]
+latex = r"\int_0^\infty \frac{1}{x^2}\, dx"
+prompt = tok.apply_chat_template(
+    [{"role": "system", "content": SYSTEM},
+     {"role": "user", "content": USER.format(latex=latex)}],
+    tokenize=False, add_generation_prompt=True, enable_thinking=False,
+)
+ids = tok(prompt, return_tensors="pt", add_special_tokens=False).input_ids.to(model.device)
+out = model.generate(ids, max_new_tokens=120, do_sample=False)
+print(tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True).strip())
+# the integral from 0 to infinity of 1 over x squared, dx
+```
 
-### Model Sources [optional]
+`enable_thinking=False` is required — the base model is a thinking model and
+the adapter is trained for direct answers.
 
-<!-- Provide the basic links for the model. -->
+## Training
 
-- **Repository:** [More Information Needed]
-- **Paper [optional]:** [More Information Needed]
-- **Demo [optional]:** [More Information Needed]
-
-## Uses
-
-<!-- Address questions around how the model is intended to be used, including the foreseeable users of the model and those affected by the model. -->
-
-### Direct Use
-
-<!-- This section is for the model use without fine-tuning or plugging into a larger ecosystem/app. -->
-
-[More Information Needed]
-
-### Downstream Use [optional]
-
-<!-- This section is for the model use when fine-tuned for a task, or when plugged into a larger ecosystem/app -->
-
-[More Information Needed]
-
-### Out-of-Scope Use
-
-<!-- This section addresses misuse, malicious use, and uses that the model will not work well for. -->
-
-[More Information Needed]
-
-## Bias, Risks, and Limitations
-
-<!-- This section is meant to convey both technical and sociotechnical limitations. -->
-
-[More Information Needed]
-
-### Recommendations
-
-<!-- This section is meant to convey recommendations with respect to the bias, risk, and technical limitations. -->
-
-Users (both direct and downstream) should be made aware of the risks, biases and limitations of the model. More information needed for further recommendations.
-
-## How to Get Started with the Model
-
-Use the code below to get started with the model.
-
-[More Information Needed]
-
-## Training Details
-
-### Training Data
-
-<!-- This should link to a Dataset Card, perhaps with a short stub of information on what the training data is all about as well as documentation related to data pre-processing or additional filtering. -->
-
-[More Information Needed]
-
-### Training Procedure
-
-<!-- This relates heavily to the Technical Specifications. Content here should link to that section when it is relevant to the training procedure. -->
-
-#### Preprocessing [optional]
-
-[More Information Needed]
-
-
-#### Training Hyperparameters
-
-- **Training regime:** [More Information Needed] <!--fp32, fp16 mixed precision, bf16 mixed precision, bf16 non-mixed precision, fp16 non-mixed precision, fp8 mixed precision -->
-
-#### Speeds, Sizes, Times [optional]
-
-<!-- This section provides information about throughput, start/end time, checkpoint size if relevant, etc. -->
-
-[More Information Needed]
+- Base: Qwen3-4B (Apache 2.0)
+- LoRA r=32 on q/k/v/o projections (23.6M trainable params, 0.58%)
+- Data: 6,272 fully synthetic pairs — L1 (single operations), L2 (sums,
+  integrals, derivatives), L3 (matrices, piecewise functions, norms), L4
+  (formulas embedded in English sentences), plus 400 identity samples of
+  plain text (guard behavior: text without math passes through unchanged)
+- Function/operator names follow the amsmath `\DeclareMathOperator` list
+  (30 operators) plus common named operators (`softmax`, `ReLU`,
+  `LayerNorm`, …) via `\operatorname{}` / `\mathrm{}` passthrough
+- Parenthesized expressions under an exponent are read with explicit
+  grouping ("the quantity a plus b, squared") so `(a+b)^2` is never
+  misread as `a + b^2`
 
 ## Evaluation
 
-<!-- This section describes the evaluation protocols and provides the results. -->
+Three-layer protocol (all reproducible from the repo):
 
-### Testing Data, Factors & Metrics
+1. **Symbol coverage audit** — 143 cases: Greek (upper/lower), relations,
+   logic, arrows, calculus, functions, physics notation, fonts, and the
+   full amsmath `\DeclareMathOperator` set. Rules layer 143/143; model
+   layer 133/143, of which the remaining misses are mostly legitimate
+   variant readings ("is congruent to" for `\equiv`).
+2. **Held-out formulas** (seed-separated from training): 100/100 accepted —
+   L1–L3 by exact text match (25/25 each), L4 by LLM-judged semantic
+   equivalence (local Qwen3-8B judge allows legitimate variant readings).
+3. **Guard**: plain text without math passes through unchanged, 30/30.
+4. **Round-trip** (spot checks): TTS (Kokoro-82M) → Whisper ASR → LLM
+   judge on semantic match. ASR homophone errors ("c over u" heard as
+   "see over you") are out of scope by design.
 
-#### Testing Data
+## Known limitations
 
-<!-- This should link to a Dataset Card if possible. -->
+- English only; Chinese is planned.
+- Canonical readings are the mainstream choices of the generators; rare
+  LaTeX outside the audited 143-case distribution may degrade.
+- Known gaps: `\vec{v}` sometimes semantically hallucinated ("velocity"),
+  `\nabla \cdot` not reliably read as "divergence", `\dots` occasionally
+  output literally.
+- Single-letter formulas are homophone-ambiguous when spoken ("c" = "see");
+  this is a property of speech, not a bug.
 
-[More Information Needed]
+## Links
 
-#### Factors
-
-<!-- These are the things the evaluation is disaggregating by, e.g., subpopulations or domains. -->
-
-[More Information Needed]
-
-#### Metrics
-
-<!-- These are the evaluation metrics being used, ideally with a description of why. -->
-
-[More Information Needed]
-
-### Results
-
-[More Information Needed]
-
-#### Summary
-
-
-
-## Model Examination [optional]
-
-<!-- Relevant interpretability work for the model goes here -->
-
-[More Information Needed]
-
-## Environmental Impact
-
-<!-- Total emissions (in grams of CO2eq) and additional considerations, such as electricity usage, go here. Edit the suggested text below accordingly -->
-
-Carbon emissions can be estimated using the [Machine Learning Impact calculator](https://mlco2.github.io/impact#compute) presented in [Lacoste et al. (2019)](https://arxiv.org/abs/1910.09700).
-
-- **Hardware Type:** [More Information Needed]
-- **Hours used:** [More Information Needed]
-- **Cloud Provider:** [More Information Needed]
-- **Compute Region:** [More Information Needed]
-- **Carbon Emitted:** [More Information Needed]
-
-## Technical Specifications [optional]
-
-### Model Architecture and Objective
-
-[More Information Needed]
-
-### Compute Infrastructure
-
-[More Information Needed]
-
-#### Hardware
-
-[More Information Needed]
-
-#### Software
-
-[More Information Needed]
-
-## Citation [optional]
-
-<!-- If there is a paper or blog post introducing the model, the APA and Bibtex information for that should go in this section. -->
-
-**BibTeX:**
-
-[More Information Needed]
-
-**APA:**
-
-[More Information Needed]
-
-## Glossary [optional]
-
-<!-- If relevant, include terms and calculations in this section that can help readers understand the model or model card. -->
-
-[More Information Needed]
-
-## More Information [optional]
-
-[More Information Needed]
-
-## Model Card Authors [optional]
-
-[More Information Needed]
-
-## Model Card Contact
-
-[More Information Needed]
-### Framework versions
-
-- PEFT 0.21.2
+- Code, data generators, evaluation scripts and a live demo:
+  https://github.com/pphu0803/latex2voice
