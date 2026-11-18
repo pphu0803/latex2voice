@@ -44,14 +44,14 @@ FORMULAS = [
      "LayerNorm(x) = γ · (x-μ)/√(σ²+ε)"),
     ("limsup-inf-sup", r"\limsup_{n \to \infty} a_n = \inf_{n} \sup_{k \geq n} a_k",
      "limsup a_n = inf_n sup_{k≥n} a_k"),
-    ("kernel-trace-rank", r"\ker(A) = \{0\}, \quad \tr(A) = \sum_{i=1}^{n} \lambda_i, \quad \rank(A) = 3",
+    ("kernel-trace-rank", r"\ker(A) = \{0\}, \tr(A) = \sum_{i=1}^{n} \lambda_i, \rank(A) = 3",
      "ker(A) = {0}, tr(A) = Σλ_i, rank(A) = 3"),
     ("diag-sign", r"\diag(v) \cdot \sign(v) \geq 0",
      "diag(v) · sign(v) ≥ 0"),
     ("pmod", r"a \equiv b \pmod{n}",
      "a ≡ b (mod n)"),
-    ("prob-hom", r"\Pr(X > 0) \geq \hom(X, Y) - \lg n",
-     "Pr(X>0) ≥ hom(X,Y) - lg n"),
+    ("binom", r"\Pr(X = k) = \binom{n}{k}\, p^k (1-p)^{n-k}",
+     "Pr(X=k) = C(n,k) p^k (1-p)^{n-k}"),
 ]
 
 import json  # noqa: E402

@@ -179,8 +179,8 @@
   }
   .ba-label.before { color: var(--bad); }
   .ba-label.after { color: var(--good); }
-  .ba-row.before-row .player .fill { background: var(--bad); }
-  .ba-row.before-row .player button.play { background: var(--bad); border-color: var(--bad); }
+  .ba-row.before-row .player .fill { background: #9aa2ad; }
+  .ba-row.before-row .player button.play { background: #6b7280; border-color: #6b7280; }
 
   footer {
     margin-top: 56px;
@@ -282,8 +282,8 @@
   LaTeX into the sentence a person would actually say, then hands it to any TTS voice.</p>
 
   <div class="stats">
-    <div class="stat"><div class="v">~2 GB</div><div class="k">Runtime RAM (4B LoRA, CPU)</div></div>
-    <div class="stat"><div class="v">3–6 s</div><div class="k">Per formula, CPU only</div></div>
+    <div class="stat"><div class="v">~2 GB</div><div class="k">Runtime RAM (4B LoRA)</div></div>
+    <div class="stat"><div class="v">3–6 s</div><div class="k">Per formula on CPU · no GPU needed</div></div>
     <div class="stat"><div class="v">30+</div><div class="k">amsmath operators</div></div>
     <div class="stat"><div class="v">143</div><div class="k">Symbol coverage audited</div></div>
   </div>
@@ -386,19 +386,22 @@
 
   <div class="card">
     <div class="card-head"><span class="domain">Probability</span><span class="no">8</span></div>
-    <div class="formula">$$\Pr(X > 0) \geq \hom(X, Y) - \lg n$$</div>
-    <div class="rawlatex"><span class="lbl">LaTeX</span><code>\Pr(X > 0) \geq \hom(X, Y) - \lg n</code><button class="copy">copy</button></div>
-    <div class="player" data-src="audio/prob-hom.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
-    <div class="spoken" data-fill="prob-hom"></div>
+    <div class="formula">$$\Pr(X = k) = \binom{n}{k}\, p^k (1-p)^{n-k}$$</div>
+    <div class="rawlatex"><span class="lbl">LaTeX</span><code>\Pr(X = k) = \binom{n}{k}\, p^k (1-p)^{n-k}</code><button class="copy">copy</button></div>
+    <div class="player" data-src="audio/binom.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+    <div class="spoken" data-fill="binom"></div>
   </div>
 
   <h2>Use it</h2>
 
-  <pre class="pre"><span class="c"># pip install latextts  — TN front end, any TTS behind it</span>
-<span class="k">from</span> latextts <span class="k">import</span> tn
-spoken = tn(<span class="string">r"\limsup_{n \to \infty} a_n"</span>)
-<span class="c"># -> "the limit superior as n goes to infinity of a sub n"</span>
-tts.speak(spoken)  <span class="c"># Kokoro, Piper, Azure… your choice</span></pre>
+  <pre class="pre"><span class="c"># works today: pull the LoRA from Hugging Face (Apache-2.0)</span>
+<span class="k">from</span> peft <span class="k">import</span> PeftModel
+<span class="k">from</span> transformers <span class="k">import</span> AutoModelForCausalLM
+base = AutoModelForCausalLM.from_pretrained(<span class="string">"Qwen/Qwen3-4B"</span>)
+model = PeftModel.from_pretrained(base, <span class="string">"petehu0803/latex2voice"</span>)
+<span class="c"># tn("\limsup_{n \to \infty} a_n") -&gt; "the limit superior as n goes to infinity of a sub n"</span>
+<span class="c"># then hand the spoken text to ANY TTS engine</span></pre>
+  <p style="color:var(--ink-soft);font-size:0.9rem;margin:10px 0 0">English now — 中文版 planned. Full runnable snippet in the <a href="https://huggingface.co/petehu0803/latex2voice" style="color:var(--accent)">model card</a>.</p>
 
   <div class="cta">
     <a class="btn gh" href="https://github.com/pphu0803/latex2voice">
@@ -412,10 +415,8 @@ tts.speak(spoken)  <span class="c"># Kokoro, Piper, Azure… your choice</span><
   </div>
 
   <footer>
-    Everything here runs locally: LaTeX → spoken text (Qwen3-4B + LoRA, this project)
-    → audio (Kokoro 82M). No API calls, works on a CPU laptop. Runtime footprint ≈ 2 GB
-    RAM, ~3–6 s per formula on CPU; training was a 40-minute LoRA run on a consumer
-    iGPU. English only for now — Chinese is planned.<br>
+    Everything here runs locally, no API calls. Training: a 40-minute LoRA run on a
+    consumer iGPU, 6,272 fully synthetic pairs, zero human annotations.<br>
     Verification: every clip was round-tripped through Whisper and judged semantically
     equivalent to its source formula by an LLM judge.
   </footer>
@@ -428,10 +429,10 @@ const SPOKEN_FALLBACK = {
   "relu": "y hat equals R e L U, W x plus b,",
   "layernorm": "layer norm, x, equals gamma times, x minus mu over the square root of sigma squared plus epsilon,",
   "limsup-inf-sup": "the limit superior as n goes to infinity of a sub n equals the infimum over n of the supremum over k greater than or equal to n of a sub k",
-  "kernel-trace-rank": "the kernel of A, equals the set containing 0, , the trace of A, equals the sum from i equals 1 to n of lambda sub i, , the rank of A equals 3",
+  "kernel-trace-rank": "the kernel of A, equals the set containing 0, the trace of A, equals the sum from i equals 1 to n of lambda sub i, the rank of A equals 3",
   "diag-sign": "the diagonal of v times the sign of v is greater than or equal to 0",
   "pmod": "a is congruent to b modulo n",
-  "prob-hom": "the probability that X is greater than 0 is greater than or equal to the hom(X, Y) minus log base 2 of n"
+  "binom": "the probability that X equals k, equals the binomial coefficient n choose k, p to the power k, 1 minus p to the power n minus k"
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -456,7 +457,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const audios = [];
   document.querySelectorAll(".player").forEach(p => {
     const audio = new Audio(p.dataset.src);
-    audio.preload = "none";
+    audio.preload = "metadata";
     audios.push(audio);
     const btn = p.querySelector(".play");
     const fillEl = p.querySelector(".fill");
