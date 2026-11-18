@@ -20,7 +20,7 @@ def gen_l1(rng: R) -> str:
     kind = rng.choice(["power", "frac", "sqrt", "greek", "simple_eq", "trig",
                        "coef_term", "two_term", "coef_frac", "neg_power",
                        "paren_group", "paren_frac", "named_fn", "sub_paren",
-                       "math_fonts"])
+                       "math_fonts", "accents", "point_ops", "ellipsis_seq"])
     x, y = rng.sample(SYMBOL_POOL, 2)
     coef = rng.choice(["", "2", "3", "4", "\\frac{1}{2}", "\\frac{3}{4}", "-"])
     if kind == "named_fn":
@@ -42,6 +42,17 @@ def gen_l1(rng: R) -> str:
         letter = rng.choice("LMHT")
         return rng.choice([rf"\mathcal{{{letter}}}", rf"\mathbb{{{rng.choice(['R', 'E'])}}}",
                            rf"\mathbf{{{rng.choice(SYMBOL_POOL)}}}"])
+    if kind == "accents":
+        base = rng.choice(SYMBOL_POOL)
+        return rng.choice([rf"\vec{{{base}}}", rf"\hat{{{base}}}", rf"\bar{{{base}}}",
+                           rf"\tilde{{{base}}}", rf"\dot{{{base}}}"])
+    if kind == "point_ops":
+        op = rng.choice([r"\odot", r"\otimes", r"\oplus"])
+        a, b = rng.choice(SYMBOL_POOL), rng.choice(GREEK_POOL)
+        return rng.choice([rf"{a} {op} {b}", rf"({a} + {b}) {op} 2"])
+    if kind == "ellipsis_seq":
+        base = rng.choice(SYMBOL_POOL)
+        return rf"{base}_1, {base}_2, \dots, {base}_{rng.choice(['n', 'N', 'm'])}"
     x, y = rng.sample(SYMBOL_POOL, 2)
     coef = rng.choice(["", "2", "3", "4", "\\frac{1}{2}", "\\frac{3}{4}", "-"])
     if kind == "paren_group":
@@ -86,7 +97,12 @@ def gen_l1(rng: R) -> str:
 
 def gen_l2(rng: R) -> str:
     kind = rng.choice(["sum", "int", "deriv", "chain", "exp_log", "lim_simple",
-                       "double_frac", "trig_comp", "prod_chain", "bound_variants"])
+                       "double_frac", "trig_comp", "prod_chain", "bound_variants",
+                       "nabla_ops"])
+    if kind == "nabla_ops":
+        f = rng.choice(SYMBOL_POOL + GREEK_POOL)
+        return rng.choice([rf"\nabla \cdot {f}", rf"\nabla \times {f}",
+                           rf"\nabla {f} = {rng.randint(1, 9)}", rf"\nabla^2 {f} = 0"])
     x, y = rng.sample(SYMBOL_POOL, 2)
     if kind == "sum":
         body = rng.choice([f"{rng.choice(SYMBOL_POOL)}^{2}", rf"\frac{{1}}{{{rng.choice(SYMBOL_POOL)}}}", "k",

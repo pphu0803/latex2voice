@@ -68,8 +68,17 @@ OPERATORS = {
     r"\infty": "infinity",
     r"\partial": "partial ",
     r"\nabla": "nabla ",
+    r"\odot": " elementwise product ",
+    r"\otimes": " tensor product ",
+    r"\oplus": " direct sum ",
     r"\ell": "ell",
     r"\hbar": "h bar",
+}
+
+# ellipsis variants read as "and so on" (mainstream spoken convention)
+_DOTS = {
+    r"\dots": " and so on ", r"\ldots": " and so on ", r"\cdots": " and so on ",
+    r"\vdots": " and so on ", r"\ddots": " and so on ",
 }
 
 # Functions read as their name
@@ -294,6 +303,10 @@ def latex_to_spoken(latex: str) -> str:
     # functions
     for cmd in sorted(FUNCTIONS, key=len, reverse=True):
         s = s.replace(cmd, FUNCTIONS[cmd] + " ")
+
+    # ellipsis variants BEFORE operators (\cdots must not be eaten by \cdot)
+    for cmd, spoken in sorted(_DOTS.items(), key=lambda kv: -len(kv[0])):
+        s = s.replace(cmd, spoken)
 
     # operators (longest first)
     for cmd in sorted(OPERATORS, key=len, reverse=True):

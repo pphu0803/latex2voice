@@ -1,12 +1,13 @@
 """TN inference: load Qwen3-4B + trained LoRA, convert LaTeX -> spoken English."""
 from __future__ import annotations
 
+import os
 import torch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-MODEL_DIR = Path(r"H:\SHARE\latex-tts\models\Qwen3-4B")
-LORA_DIR = ROOT / "models" / "tn-lora"
+MODEL_DIR = Path(os.environ.get("L2V_BASE", r"H:\SHARE\latex-tts\models\Qwen3-4B"))
+LORA_DIR = Path(os.environ.get("L2V_LORA", ROOT / "models" / "tn-lora"))
 
 SYSTEM_PROMPT = (
     "You convert LaTeX math into fluent English spoken form (what a person "

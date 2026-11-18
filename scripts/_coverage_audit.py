@@ -66,7 +66,11 @@ CASES = [
     ("font", r"\mathbb{R}", "real numbers"), ("font", r"\mathcal{L}", "calligraphic"),
     ("font", r"\mathbf{v}", "v"), ("font", r"\text{if } x > 0", "if"),
     ("abbr", r"a \equiv b \pmod{n}", "modulo"), ("abbr", r"\text{const}", "const"),
-    ("abbr", r"i \dots j", "dots"),
+    ("abbr", r"1, 2, \dots, n", "and so on"),
+    # --- binary point operators & ellipsis variants (v8 additions) ---
+    ("ops", r"a \odot b", "elementwise product"), ("ops", r"x \otimes y", "tensor product"),
+    ("ops", r"V \oplus W", "direct sum"), ("ops", r"1 + 2 + \cdots + n", "and so on"),
+    ("ops", r"\vdots", "and so on"), ("ops", r"\nabla \times B", "curl of"),
     # --- amsmath official \DeclareMathOperator list (30 names, amsmath v2 sec 5) ---
     ("amsmath", r"\arccos x", "arc cosine"),
     ("amsmath", r"\arcsin x", "arc sine"), ("amsmath", r"\arctan x", "arc tangent"),

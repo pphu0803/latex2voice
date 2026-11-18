@@ -66,7 +66,12 @@ def main() -> None:
     ap.add_argument("--max-steps", type=int, default=0, help="0 = full epochs")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--device", default="")
+    ap.add_argument("--model", default=str(MODEL_DIR), help="base model dir or HF id")
+    ap.add_argument("--out", default="", help="LoRA output dir (default models/tn-lora)")
     args = ap.parse_args()
+    base_dir = args.model
+    if args.out:
+        OUT_DIR = Path(args.out)
 
     import sys
 
@@ -85,11 +90,11 @@ def main() -> None:
 
     device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
     log(f"stage=device={device} loading tokenizer")
-    tok = AutoTokenizer.from_pretrained(MODEL_DIR)
+    tok = AutoTokenizer.from_pretrained(base_dir)
     pad_id = tok.pad_token_id if tok.pad_token_id is not None else tok.eos_token_id
     log("stage=loading model (8GB)")
     model = AutoModelForCausalLM.from_pretrained(
-        MODEL_DIR,
+        base_dir,
         torch_dtype=torch.bfloat16 if device == "cuda" else torch.float32,
         device_map=device,
         attn_implementation="eager",

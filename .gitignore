@@ -3,3 +3,5 @@ __pycache__/
 logs/
 data/audio/
 .ipynb_checkpoints/
+server/trial.db
+*.db
