@@ -9,7 +9,7 @@ tags:
 - asr
 language:
 - en
-pipeline_tag: text2text-generation
+pipeline_tag: text-generation
 library_name: peft
 ---
 
@@ -112,4 +112,4 @@ Three-layer protocol (all reproducible from the repo):
 ## Links
 
 - Code, data generators, evaluation scripts and a live demo:
-  https://github.com/petehu0803/latex2voice
+  https://github.com/pphu0803/latex2voice
