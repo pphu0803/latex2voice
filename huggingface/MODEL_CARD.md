@@ -43,7 +43,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-4B", dtype=torch.bfloat16, device_map="auto")
-model = PeftModel.from_pretrained(base, "pphu0803/latex2voice")
+model = PeftModel.from_pretrained(base, "petehu0803/latex2voice")
 tok = AutoTokenizer.from_pretrained("Qwen/Qwen3-4B")
 
 SYSTEM = ("You convert LaTeX math into fluent English spoken form (what a person "
@@ -112,4 +112,4 @@ Three-layer protocol (all reproducible from the repo):
 ## Links
 
 - Code, data generators, evaluation scripts and a live demo:
-  https://github.com/pphu0803/latex2voice
+  https://github.com/petehu0803/latex2voice
