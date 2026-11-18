@@ -1,0 +1,60 @@
+{"id": "L1-0000", "level": "L1", "latex": "\\ln x", "spoken_rules": "natural log x"}
+{"id": "L1-0001", "level": "L1", "latex": "\\frac{a}{z}", "spoken_rules": ", a over z,"}
+{"id": "L1-0002", "level": "L1", "latex": "\\sin x", "spoken_rules": "sine x"}
+{"id": "L1-0003", "level": "L1", "latex": "n + x = 1", "spoken_rules": "n plus x equals 1"}
+{"id": "L1-0004", "level": "L1", "latex": "\\mu^{2n+1}", "spoken_rules": "mu to the power 2n plus 1"}
+{"id": "L1-0005", "level": "L1", "latex": "\\sigma^{n}", "spoken_rules": "sigma to the power n"}
+{"id": "L1-0006", "level": "L1", "latex": "\\frac{t}{v}", "spoken_rules": ", t over v,"}
+{"id": "L1-0007", "level": "L1", "latex": "\\sqrt{g}", "spoken_rules": "the square root of g"}
+{"id": "L1-0008", "level": "L1", "latex": "\\theta", "spoken_rules": "theta"}
+{"id": "L1-0009", "level": "L1", "latex": "\\frac{c}{y}", "spoken_rules": ", c over y,"}
+{"id": "L1-0010", "level": "L1", "latex": "g^-1", "spoken_rules": "g to the power minus 1"}
+{"id": "L1-0011", "level": "L1", "latex": "b + x = 15", "spoken_rules": "b plus x equals 15"}
+{"id": "L1-0012", "level": "L1", "latex": "y + n = 3", "spoken_rules": "y plus n equals 3"}
+{"id": "L1-0013", "level": "L1", "latex": "b + f = 20", "spoken_rules": "b plus f equals 20"}
+{"id": "L1-0014", "level": "L1", "latex": "t^-1", "spoken_rules": "t to the power minus 1"}
+{"id": "L1-0015", "level": "L1", "latex": "\\alpha^-1", "spoken_rules": "alpha to the power minus 1"}
+{"id": "L1-0016", "level": "L1", "latex": "\\sqrt{f}", "spoken_rules": "the square root of f"}
+{"id": "L1-0017", "level": "L1", "latex": "c^{2n+1}", "spoken_rules": "c to the power 2n plus 1"}
+{"id": "L1-0018", "level": "L1", "latex": "\\log_2 n", "spoken_rules": "log sub 2 n"}
+{"id": "L1-0019", "level": "L1", "latex": "\\lambda", "spoken_rules": "lambda"}
+{"id": "L1-0020", "level": "L1", "latex": "\\cos \\theta", "spoken_rules": "cosine theta"}
+{"id": "L1-0021", "level": "L1", "latex": "u^2", "spoken_rules": "u squared"}
+{"id": "L1-0022", "level": "L1", "latex": "\\frac{v}{c}", "spoken_rules": ", v over c,"}
+{"id": "L1-0023", "level": "L1", "latex": "\\frac{f}{t}", "spoken_rules": ", f over t,"}
+{"id": "L1-0024", "level": "L1", "latex": "u + b = 19", "spoken_rules": "u plus b equals 19"}
+{"id": "L1-0025", "level": "L1", "latex": "\\sigma", "spoken_rules": "sigma"}
+{"id": "L1-0026", "level": "L1", "latex": "\\frac{z}{u}", "spoken_rules": ", z over u,"}
+{"id": "L1-0027", "level": "L1", "latex": "\\beta", "spoken_rules": "beta"}
+{"id": "L1-0028", "level": "L1", "latex": "\\frac{f}{z}", "spoken_rules": ", f over z,"}
+{"id": "L1-0029", "level": "L1", "latex": "\\omega", "spoken_rules": "omega"}
+{"id": "L1-0030", "level": "L1", "latex": "b + u = 1", "spoken_rules": "b plus u equals 1"}
+{"id": "L1-0031", "level": "L1", "latex": "\\alpha", "spoken_rules": "alpha"}
+{"id": "L1-0032", "level": "L1", "latex": "y + f = 10", "spoken_rules": "y plus f equals 10"}
+{"id": "L1-0033", "level": "L1", "latex": "\\frac{c}{z}", "spoken_rules": ", c over z,"}
+{"id": "L1-0034", "level": "L1", "latex": "u + x = 20", "spoken_rules": "u plus x equals 20"}
+{"id": "L1-0035", "level": "L1", "latex": "\\sqrt{y}", "spoken_rules": "the square root of y"}
+{"id": "L1-0036", "level": "L1", "latex": "\\sqrt{x}", "spoken_rules": "the square root of x"}
+{"id": "L1-0037", "level": "L1", "latex": "\\frac{v}{y}", "spoken_rules": ", v over y,"}
+{"id": "L1-0038", "level": "L1", "latex": "z^{2n+1}", "spoken_rules": "z to the power 2n plus 1"}
+{"id": "L1-0039", "level": "L1", "latex": "\\frac{z}{f}", "spoken_rules": ", z over f,"}
+{"id": "L1-0040", "level": "L1", "latex": "\\mu", "spoken_rules": "mu"}
+{"id": "L1-0041", "level": "L1", "latex": "v + n = 7", "spoken_rules": "v plus n equals 7"}
+{"id": "L1-0042", "level": "L1", "latex": "g + a = 10", "spoken_rules": "g plus a equals 10"}
+{"id": "L1-0043", "level": "L1", "latex": "\\frac{a}{y}", "spoken_rules": ", a over y,"}
+{"id": "L1-0044", "level": "L1", "latex": "\\sqrt{u}", "spoken_rules": "the square root of u"}
+{"id": "L1-0045", "level": "L1", "latex": "\\frac{v}{a}", "spoken_rules": ", v over a,"}
+{"id": "L1-0046", "level": "L1", "latex": "y^3", "spoken_rules": "y cubed"}
+{"id": "L1-0047", "level": "L1", "latex": "\\frac{b}{f}", "spoken_rules": ", b over f,"}
+{"id": "L1-0048", "level": "L1", "latex": "\\frac{t}{n}", "spoken_rules": ", t over n,"}
+{"id": "L1-0049", "level": "L1", "latex": "\\frac{y}{g}", "spoken_rules": ", y over g,"}
+{"id": "L1-0050", "level": "L1", "latex": "a^3", "spoken_rules": "a cubed"}
+{"id": "L1-0051", "level": "L1", "latex": "\\frac{a}{u}", "spoken_rules": ", a over u,"}
+{"id": "L1-0052", "level": "L1", "latex": "\\frac{z}{n}", "spoken_rules": ", z over n,"}
+{"id": "L1-0053", "level": "L1", "latex": "\\phi", "spoken_rules": "phi"}
+{"id": "L1-0054", "level": "L1", "latex": "x^{n}", "spoken_rules": "x to the power n"}
+{"id": "L1-0055", "level": "L1", "latex": "\\sqrt{n}", "spoken_rules": "the square root of n"}
+{"id": "L1-0056", "level": "L1", "latex": "\\frac{a}{b}", "spoken_rules": ", a over b,"}
+{"id": "L1-0057", "level": "L1", "latex": "\\frac{x}{v}", "spoken_rules": ", x over v,"}
+{"id": "L1-0058", "level": "L1", "latex": "\\lambda^{2n+1}", "spoken_rules": "lambda to the power 2n plus 1"}
+{"id": "L1-0059", "level": "L1", "latex": "z + x = 17", "spoken_rules": "z plus x equals 17"}

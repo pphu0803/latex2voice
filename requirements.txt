@@ -1,0 +1,11 @@
+transformers>=4.45
+torch
+kokoro>=0.9
+soundfile
+numpy
+sympy
+latex2sympy2_extended
+datasets
+peft
+accelerate
+librosa

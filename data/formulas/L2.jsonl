@@ -1,0 +1,60 @@
+{"id": "L2-0000", "level": "L2", "latex": "\\lim_{n \\to \\infty} \\frac{1}{n} = 0", "spoken_rules": "the limit as n goes to infinity of 1 over n, equals 0"}
+{"id": "L2-0001", "level": "L2", "latex": "\\sum_{k=1}^{n} \\frac{1}{g}", "spoken_rules": "the sum from k equals 1 to n of 1 over g,"}
+{"id": "L2-0002", "level": "L2", "latex": "\\int_{0}^{\\infty} a^2\\, df", "spoken_rules": "the integral from 0 to infinity of a squared, df"}
+{"id": "L2-0003", "level": "L2", "latex": "\\ln\\left(y^2 + 1\\right)", "spoken_rules": "natural log, y squared plus 1,"}
+{"id": "L2-0004", "level": "L2", "latex": "\\sum_{k=1}^{n} x^2", "spoken_rules": "the sum from k equals 1 to n of x squared"}
+{"id": "L2-0005", "level": "L2", "latex": "\\int_{0}^{\\infty} \\ln x\\, da", "spoken_rules": "the integral from 0 to infinity of natural log x, da"}
+{"id": "L2-0006", "level": "L2", "latex": "\\ln\\left(n^2 + 1\\right)", "spoken_rules": "natural log, n squared plus 1,"}
+{"id": "L2-0007", "level": "L2", "latex": "e^{i\\pi} + 1 = 0", "spoken_rules": "e to the power i pi plus 1 equals 0"}
+{"id": "L2-0008", "level": "L2", "latex": "\\frac{1}{2} f^{2} + \\frac{1}{b}", "spoken_rules": ", 1 over 2, f squared plus, 1 over b,"}
+{"id": "L2-0009", "level": "L2", "latex": "\\int_{0}^{\\infty} a^2\\, dn", "spoken_rules": "the integral from 0 to infinity of a squared, dn"}
+{"id": "L2-0010", "level": "L2", "latex": "\\sum_{k=1}^{n} k", "spoken_rules": "the sum from k equals 1 to n of k"}
+{"id": "L2-0011", "level": "L2", "latex": "f'(x) = 8x + 9", "spoken_rules": "f prime of x, equals 8x plus 9"}
+{"id": "L2-0012", "level": "L2", "latex": "g'(x) = 4x + 2", "spoken_rules": "g prime of x, equals 4x plus 2"}
+{"id": "L2-0013", "level": "L2", "latex": "\\sum_{k=1}^{n} \\frac{1}{a}", "spoken_rules": "the sum from k equals 1 to n of 1 over a,"}
+{"id": "L2-0014", "level": "L2", "latex": "\\sum_{k=1}^{n} \\frac{1}{y}", "spoken_rules": "the sum from k equals 1 to n of 1 over y,"}
+{"id": "L2-0015", "level": "L2", "latex": "g'(x) = 6x + 3", "spoken_rules": "g prime of x, equals 6x plus 3"}
+{"id": "L2-0016", "level": "L2", "latex": "g'(x) = 4x + 5", "spoken_rules": "g prime of x, equals 4x plus 5"}
+{"id": "L2-0017", "level": "L2", "latex": "\\sum_{k=1}^{n} v^2", "spoken_rules": "the sum from k equals 1 to n of v squared"}
+{"id": "L2-0018", "level": "L2", "latex": "\\frac{1}{2} \\alpha^{2} + \\frac{1}{b}", "spoken_rules": ", 1 over 2, alpha squared plus, 1 over b,"}
+{"id": "L2-0019", "level": "L2", "latex": "\\ln\\left(a^2 + 1\\right)", "spoken_rules": "natural log, a squared plus 1,"}
+{"id": "L2-0020", "level": "L2", "latex": "\\sum_{k=1}^{n} \\frac{1}{x}", "spoken_rules": "the sum from k equals 1 to n of 1 over x,"}
+{"id": "L2-0021", "level": "L2", "latex": "\\frac{1}{2} u^{2} + \\frac{1}{y}", "spoken_rules": ", 1 over 2, u squared plus, 1 over y,"}
+{"id": "L2-0022", "level": "L2", "latex": "\\int_{0}^{\\infty} v^2\\, df", "spoken_rules": "the integral from 0 to infinity of v squared, df"}
+{"id": "L2-0023", "level": "L2", "latex": "\\frac{1}{2} \\alpha^{2} + \\frac{1}{f}", "spoken_rules": ", 1 over 2, alpha squared plus, 1 over f,"}
+{"id": "L2-0024", "level": "L2", "latex": "\\frac{1}{2} b^{2} + \\frac{1}{b}", "spoken_rules": ", 1 over 2, b squared plus, 1 over b,"}
+{"id": "L2-0025", "level": "L2", "latex": "\\int_{0}^{\\infty} \\ln u\\, db", "spoken_rules": "the integral from 0 to infinity of natural log u, db"}
+{"id": "L2-0026", "level": "L2", "latex": "f'(x) = 3x + 9", "spoken_rules": "f prime of x, equals 3x plus 9"}
+{"id": "L2-0027", "level": "L2", "latex": "\\frac{1}{2} z^{2} + \\frac{1}{x}", "spoken_rules": ", 1 over 2, z squared plus, 1 over x,"}
+{"id": "L2-0028", "level": "L2", "latex": "\\sum_{k=1}^{n} z^2", "spoken_rules": "the sum from k equals 1 to n of z squared"}
+{"id": "L2-0029", "level": "L2", "latex": "\\frac{1}{2} \\omega^{2} + \\frac{1}{y}", "spoken_rules": ", 1 over 2, omega squared plus, 1 over y,"}
+{"id": "L2-0030", "level": "L2", "latex": "\\frac{1}{2} \\alpha^{2} + \\frac{1}{v}", "spoken_rules": ", 1 over 2, alpha squared plus, 1 over v,"}
+{"id": "L2-0031", "level": "L2", "latex": "\\frac{1}{2} \\mu^{2} + \\frac{1}{b}", "spoken_rules": ", 1 over 2, mu squared plus, 1 over b,"}
+{"id": "L2-0032", "level": "L2", "latex": "\\exp\\left(-f^{2}\\right)", "spoken_rules": "exp, minus f squared,"}
+{"id": "L2-0033", "level": "L2", "latex": "\\sum_{k=1}^{n} \\frac{1}{u}", "spoken_rules": "the sum from k equals 1 to n of 1 over u,"}
+{"id": "L2-0034", "level": "L2", "latex": "f'(x) = 5x + 7", "spoken_rules": "f prime of x, equals 5x plus 7"}
+{"id": "L2-0035", "level": "L2", "latex": "\\int_{0}^{\\infty} \\ln g\\, db", "spoken_rules": "the integral from 0 to infinity of natural log g, db"}
+{"id": "L2-0036", "level": "L2", "latex": "f'(x) = 3x + 6", "spoken_rules": "f prime of x, equals 3x plus 6"}
+{"id": "L2-0037", "level": "L2", "latex": "\\int_{0}^{\\infty} \\ln x\\, dc", "spoken_rules": "the integral from 0 to infinity of natural log x, dc"}
+{"id": "L2-0038", "level": "L2", "latex": "\\frac{1}{2} x^{2} + \\frac{1}{y}", "spoken_rules": ", 1 over 2, x squared plus, 1 over y,"}
+{"id": "L2-0039", "level": "L2", "latex": "g'(x) = 4x + 1", "spoken_rules": "g prime of x, equals 4x plus 1"}
+{"id": "L2-0040", "level": "L2", "latex": "\\int_{0}^{\\infty} \\ln y\\, dt", "spoken_rules": "the integral from 0 to infinity of natural log y, dt"}
+{"id": "L2-0041", "level": "L2", "latex": "\\sum_{k=1}^{n} u^2", "spoken_rules": "the sum from k equals 1 to n of u squared"}
+{"id": "L2-0042", "level": "L2", "latex": "\\frac{1}{2} \\sigma^{2} + \\frac{1}{z}", "spoken_rules": ", 1 over 2, sigma squared plus, 1 over z,"}
+{"id": "L2-0043", "level": "L2", "latex": "g'(x) = 4x + 9", "spoken_rules": "g prime of x, equals 4x plus 9"}
+{"id": "L2-0044", "level": "L2", "latex": "\\int_{0}^{\\infty} \\ln n\\, df", "spoken_rules": "the integral from 0 to infinity of natural log n, df"}
+{"id": "L2-0045", "level": "L2", "latex": "g'(x) = 9x + 8", "spoken_rules": "g prime of x, equals 9x plus 8"}
+{"id": "L2-0046", "level": "L2", "latex": "\\sum_{k=1}^{n} a^2", "spoken_rules": "the sum from k equals 1 to n of a squared"}
+{"id": "L2-0047", "level": "L2", "latex": "f'(x) = 9x + 4", "spoken_rules": "f prime of x, equals 9x plus 4"}
+{"id": "L2-0048", "level": "L2", "latex": "\\int_{0}^{\\infty} \\frac{1}{v}\\, da", "spoken_rules": "the integral from 0 to infinity of 1 over v, da"}
+{"id": "L2-0049", "level": "L2", "latex": "\\frac{1}{2} \\beta^{2} + \\frac{1}{a}", "spoken_rules": ", 1 over 2, beta squared plus, 1 over a,"}
+{"id": "L2-0050", "level": "L2", "latex": "\\sum_{k=1}^{n} \\frac{1}{f}", "spoken_rules": "the sum from k equals 1 to n of 1 over f,"}
+{"id": "L2-0051", "level": "L2", "latex": "g'(x) = 7x + 8", "spoken_rules": "g prime of x, equals 7x plus 8"}
+{"id": "L2-0052", "level": "L2", "latex": "f'(x) = 4x + 4", "spoken_rules": "f prime of x, equals 4x plus 4"}
+{"id": "L2-0053", "level": "L2", "latex": "\\int_{0}^{\\infty} \\frac{1}{t}\\, dz", "spoken_rules": "the integral from 0 to infinity of 1 over t, dz"}
+{"id": "L2-0054", "level": "L2", "latex": "\\frac{1}{2} \\sigma^{2} + \\frac{1}{y}", "spoken_rules": ", 1 over 2, sigma squared plus, 1 over y,"}
+{"id": "L2-0055", "level": "L2", "latex": "\\sum_{k=1}^{n} f^2", "spoken_rules": "the sum from k equals 1 to n of f squared"}
+{"id": "L2-0056", "level": "L2", "latex": "\\sum_{k=1}^{n} \\frac{1}{z}", "spoken_rules": "the sum from k equals 1 to n of 1 over z,"}
+{"id": "L2-0057", "level": "L2", "latex": "\\frac{1}{2} \\lambda^{2} + \\frac{1}{a}", "spoken_rules": ", 1 over 2, lambda squared plus, 1 over a,"}
+{"id": "L2-0058", "level": "L2", "latex": "\\frac{1}{2} y^{2} + \\frac{1}{z}", "spoken_rules": ", 1 over 2, y squared plus, 1 over z,"}
+{"id": "L2-0059", "level": "L2", "latex": "\\frac{1}{2} x^{2} + \\frac{1}{n}", "spoken_rules": ", 1 over 2, x squared plus, 1 over n,"}

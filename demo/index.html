@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>latex2voice — LaTeX formulas, spoken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #faf7f2;
+    --paper: #ffffff;
+    --ink: #1f2933;
+    --ink-soft: #5b6472;
+    --rule: #d9d2c7;
+    --accent: #8c1d18;
+    --accent-soft: #f3e9e8;
+    --good: #1e5c3a;
+    --bad: #7a2e2e;
+    --mono: Consolas, "Courier New", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 56px 24px 64px; }
+
+  header { border-bottom: 3px double var(--rule); padding-bottom: 20px; margin-bottom: 30px; }
+  h1 {
+    font-size: 2.4rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    font-family: "Palatino Linotype", Palatino, Georgia, serif;
+  }
+  h1 .accent { color: var(--accent); font-style: italic; }
+  .tagline { color: var(--ink-soft); font-size: 1.05rem; margin: 0; }
+  .badges {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-family: "Segoe UI", system-ui, sans-serif;
+  }
+  .badge {
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink-soft);
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .badge.hot { color: var(--accent); border-color: var(--accent); }
+
+  h2 {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    margin: 44px 0 18px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .lead { color: var(--ink); font-size: 1.02rem; }
+  .lead strong { color: var(--accent); }
+
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 20px 26px 16px;
+    margin-bottom: 18px;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(31, 41, 51, 0.05);
+    position: relative;
+  }
+  .card-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+  .card-head .no { margin-left: auto; font-size: 0.75rem; color: var(--ink-soft); }
+  .domain {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-family: "Segoe UI", system-ui, sans-serif;
+  }
+  .formula { font-size: 1.12rem; overflow-x: auto; padding: 2px 0; }
+  .rawlatex {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    background: #f5f1ea;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 6px 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .rawlatex code { background: none; padding: 0; font-size: inherit; }
+  .rawlatex .lbl {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    flex: none;
+  }
+  .rawlatex .copy {
+    flex: none;
+    margin-left: auto;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink-soft);
+    font-size: 0.65rem;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    padding: 1px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .rawlatex .copy:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* custom minimal player */
+  .player { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  .player button.play {
+    flex: none;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .player button.play:hover { background: var(--accent); border-color: var(--accent); }
+  .player .track { flex: 1; height: 4px; background: var(--rule); border-radius: 2px; cursor: pointer; position: relative; }
+  .player .track .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--accent); border-radius: 2px; }
+  .player .time { flex: none; font-size: 0.7rem; color: var(--ink-soft); font-family: var(--mono); min-width: 62px; text-align: right; }
+
+  .spoken {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    margin-top: 10px;
+    font-style: italic;
+    border-left: 2px solid var(--accent);
+    padding-left: 12px;
+  }
+
+  /* before/after */
+  .versus .ba {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .ba-row { padding: 10px 0; }
+  .ba-row + .ba-row { border-top: 1px dashed var(--rule); }
+  .ba-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    margin-bottom: 6px;
+  }
+  .ba-label.before { color: var(--bad); }
+  .ba-label.after { color: var(--good); }
+  .ba-row.before-row .player .fill { background: var(--bad); }
+  .ba-row.before-row .player button.play { background: var(--bad); border-color: var(--bad); }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 18px;
+    border-top: 3px double var(--rule);
+    color: var(--ink-soft);
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+  footer a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    background: var(--accent-soft);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+  .cta a.btn {
+    display: inline-block;
+    padding: 8px 18px;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    font-size: 0.85rem;
+    text-decoration: none;
+    border-radius: 4px;
+    border: 1px solid var(--accent);
+  }
+  .cta a.primary { background: var(--accent); color: #fff; }
+  .cta a.secondary { color: var(--accent); background: var(--paper); }
+  .cta a.primary:hover { filter: brightness(1.1); }
+  .cta a.secondary:hover { background: var(--accent-soft); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .stat {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 10px 14px;
+  }
+  .stat .v { font-size: 1.15rem; font-family: "Palatino Linotype", Palatino, Georgia, serif; color: var(--accent); }
+  .stat .k { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-family: "Segoe UI", system-ui, sans-serif; }
+
+  .pre {
+    background: #2b2723;
+    color: #e8e2d8;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    padding: 14px 16px;
+    border-radius: 4px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 12px 0 0;
+  }
+  .pre .c { color: #9c948a; }
+  .pre .k { color: #e8a87c; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>latex<span class="accent">2</span>voice</h1>
+    <p class="tagline">Make any TTS read math like a mathematician.</p>
+    <div class="badges">
+      <span class="badge hot">Verified by Whisper round-trip</span>
+      <span class="badge">Fully offline</span>
+      <span class="badge">Open weights</span>
+      <span class="badge">No API</span>
+      <span class="badge">English</span>
+    </div>
+  </header>
+
+  <p class="lead">Ask a stock TTS to read <code>\limsup_{n \to \infty} a_n</code> and you get
+  <em>&ldquo;backslash lim sup underscore&hellip;&rdquo;</em> — or silence. Paper audiobooks, screen-reader
+  access to lecture notes, video voice-overs: they all break the same way.
+  <strong>latex2voice</strong> is a fine-tuned text-normalization front end that rewrites
+  LaTeX into the sentence a person would actually say, then hands it to any TTS voice.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v">~2 GB</div><div class="k">Runtime RAM (4B LoRA, CPU)</div></div>
+    <div class="stat"><div class="v">3–6 s</div><div class="k">Per formula, CPU only</div></div>
+    <div class="stat"><div class="v">30+</div><div class="k">amsmath operators</div></div>
+    <div class="stat"><div class="v">143</div><div class="k">Symbol coverage audited</div></div>
+  </div>
+
+  <h2>Hear the difference</h2>
+
+  <div class="card versus"><span class="domain">Before / After</span>
+    <div class="formula">$$\limsup_{n \to \infty} a_n = \inf_{n} \sup_{k \geq n} a_k$$</div>
+    <div class="ba">
+      <div class="ba-row before-row">
+        <div class="ba-label before">Stock TTS reads the raw LaTeX</div>
+        <div class="player" data-src="audio/baseline-limsup.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+      </div>
+      <div class="ba-row">
+        <div class="ba-label after">latex2voice</div>
+        <div class="player" data-src="audio/limsup-inf-sup.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card versus"><span class="domain">Before / After</span>
+    <div class="formula">$$a \equiv b \pmod{n}$$</div>
+    <div class="ba">
+      <div class="ba-row before-row">
+        <div class="ba-label before">Stock TTS reads the raw LaTeX</div>
+        <div class="player" data-src="audio/baseline-pmod.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+      </div>
+      <div class="ba-row">
+        <div class="ba-label after">latex2voice</div>
+        <div class="player" data-src="audio/pmod.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="lead" style="font-size:0.95rem">Every sample below shows the pipeline end to end:
+  <strong>raw LaTeX</strong> (what the model sees) → <strong>spoken text</strong> (what it writes,
+  the model&rsquo;s real output, nothing handwritten) → <strong>audio</strong>. Each clip was verified
+  by round-tripping through Whisper and judging the transcription semantically equivalent
+  to the source formula.</p>
+
+  <h2>Named operators · Deep Learning</h2>
+
+  <div class="card">
+    <div class="card-head"><span class="domain">Deep Learning</span><span class="no">1</span></div>
+    <div class="formula">$$\operatorname{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{n} e^{z_j}}$$</div>
+    <div class="rawlatex"><span class="lbl">LaTeX</span><code>\operatorname{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{n} e^{z_j}}</code><button class="copy">copy</button></div>
+    <div class="player" data-src="audio/softmax.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+    <div class="spoken" data-fill="softmax"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="domain">Deep Learning</span><span class="no">2</span></div>
+    <div class="formula">$$\hat{y} = \operatorname{ReLU}(W x + b)$$</div>
+    <div class="rawlatex"><span class="lbl">LaTeX</span><code>\hat{y} = \operatorname{ReLU}(W x + b)</code><button class="copy">copy</button></div>
+    <div class="player" data-src="audio/relu.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+    <div class="spoken" data-fill="relu"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="domain">Deep Learning</span><span class="no">3</span></div>
+    <div class="formula">$$\operatorname{LayerNorm}(x) = \gamma \cdot \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}}$$</div>
+    <div class="rawlatex"><span class="lbl">LaTeX</span><code>\operatorname{LayerNorm}(x) = \gamma \cdot \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}}</code><button class="copy">copy</button></div>
+    <div class="player" data-src="audio/layernorm.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+    <div class="spoken" data-fill="layernorm"></div>
+  </div>
+
+  <h2>amsmath operators · Analysis &amp; Algebra</h2>
+
+  <div class="card">
+    <div class="card-head"><span class="domain">Analysis</span><span class="no">4</span></div>
+    <div class="formula">$$\limsup_{n \to \infty} a_n = \inf_{n} \sup_{k \geq n} a_k$$</div>
+    <div class="rawlatex"><span class="lbl">LaTeX</span><code>\limsup_{n \to \infty} a_n = \inf_{n} \sup_{k \geq n} a_k</code><button class="copy">copy</button></div>
+    <div class="player" data-src="audio/limsup-inf-sup.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+    <div class="spoken" data-fill="limsup-inf-sup"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="domain">Linear Algebra</span><span class="no">5</span></div>
+    <div class="formula">$$\ker(A) = \{0\}, \quad \operatorname{tr}(A) = \sum_{i=1}^{n} \lambda_i, \quad \operatorname{rank}(A) = 3$$</div>
+    <div class="rawlatex"><span class="lbl">LaTeX</span><code>\ker(A) = \{0\}, \quad \tr(A) = \sum_{i=1}^{n} \lambda_i, \quad \rank(A) = 3</code><button class="copy">copy</button></div>
+    <div class="player" data-src="audio/kernel-trace-rank.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+    <div class="spoken" data-fill="kernel-trace-rank"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="domain">Linear Algebra</span><span class="no">6</span></div>
+    <div class="formula">$$\operatorname{diag}(v) \cdot \operatorname{sign}(v) \geq 0$$</div>
+    <div class="rawlatex"><span class="lbl">LaTeX</span><code>\diag(v) \cdot \sign(v) \geq 0</code><button class="copy">copy</button></div>
+    <div class="player" data-src="audio/diag-sign.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+    <div class="spoken" data-fill="diag-sign"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="domain">Number Theory</span><span class="no">7</span></div>
+    <div class="formula">$$a \equiv b \pmod{n}$$</div>
+    <div class="rawlatex"><span class="lbl">LaTeX</span><code>a \equiv b \pmod{n}</code><button class="copy">copy</button></div>
+    <div class="player" data-src="audio/pmod.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+    <div class="spoken" data-fill="pmod"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="domain">Probability</span><span class="no">8</span></div>
+    <div class="formula">$$\Pr(X > 0) \geq \hom(X, Y) - \lg n$$</div>
+    <div class="rawlatex"><span class="lbl">LaTeX</span><code>\Pr(X > 0) \geq \hom(X, Y) - \lg n</code><button class="copy">copy</button></div>
+    <div class="player" data-src="audio/prob-hom.wav"><button class="play" aria-label="Play">▶</button><div class="track"><div class="fill"></div></div><div class="time">0:00 / 0:00</div></div>
+    <div class="spoken" data-fill="prob-hom"></div>
+  </div>
+
+  <h2>Use it</h2>
+
+  <pre class="pre"><span class="c"># pip install latextts  — TN front end, any TTS behind it</span>
+<span class="k">from</span> latextts <span class="k">import</span> tn
+spoken = tn(<span class="string">r"\limsup_{n \to \infty} a_n"</span>)
+<span class="c"># -> "the limit superior as n goes to infinity of a sub n"</span>
+tts.speak(spoken)  <span class="c"># Kokoro, Piper, Azure… your choice</span></pre>
+
+  <div class="cta">
+    <a class="primary" href="https://huggingface.co/" title="Weights coming soon">Hugging Face — weights soon</a>
+    <a class="secondary" href="https://github.com/" title="Repo coming soon">GitHub — star soon</a>
+  </div>
+
+  <footer>
+    Everything here runs locally: LaTeX → spoken text (Qwen3-4B + LoRA, this project)
+    → audio (Kokoro 82M). No API calls, works on a CPU laptop. Runtime footprint ≈ 2 GB
+    RAM, ~3–6 s per formula on CPU; training was a 40-minute LoRA run on a consumer
+    iGPU. English only for now — Chinese is planned.<br>
+    Verification: every clip was round-tripped through Whisper and judged semantically
+    equivalent to its source formula by an LLM judge.
+  </footer>
+</main>
+<script>
+// spoken text: fetched from audio/spoken.json (same run that produced the audio);
+// inline fallback keeps the page complete offline / on file://
+const SPOKEN_FALLBACK = {
+  "softmax": "softmax, z sub i, equals e to the power z sub i over the sum from j equals 1 to n of e to the power z sub j",
+  "relu": "y hat equals R e L U, W x plus b,",
+  "layernorm": "layer norm, x, equals gamma times, x minus mu over the square root of sigma squared plus epsilon,",
+  "limsup-inf-sup": "the limit superior as n goes to infinity of a sub n equals the infimum over n of the supremum over k greater than or equal to n of a sub k",
+  "kernel-trace-rank": "the kernel of A, equals the set containing 0, , the trace of A, equals the sum from i equals 1 to n of lambda sub i, , the rank of A equals 3",
+  "diag-sign": "the diagonal of v times the sign of v is greater than or equal to 0",
+  "pmod": "a is congruent to b modulo n",
+  "prob-hom": "the probability that X is greater than 0 is greater than or equal to the hom(X, Y) minus log base 2 of n"
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false}
+    ]
+  });
+
+  const fill = map => {
+    document.querySelectorAll(".spoken[data-fill]").forEach(el => {
+      const v = map[el.dataset.fill];
+      if (v) el.textContent = "“" + v + "”";
+    });
+  };
+  fill(SPOKEN_FALLBACK);
+  fetch("audio/spoken.json").then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(map => fill(map)).catch(() => {});   // fallback already rendered
+
+  // ---- minimal custom players + exclusive playback ----
+  const audios = [];
+  document.querySelectorAll(".player").forEach(p => {
+    const audio = new Audio(p.dataset.src);
+    audio.preload = "none";
+    audios.push(audio);
+    const btn = p.querySelector(".play");
+    const fillEl = p.querySelector(".fill");
+    const time = p.querySelector(".time");
+    const track = p.querySelector(".track");
+    const fmt = s => isFinite(s) ? Math.floor(s/60) + ":" + String(Math.floor(s%60)).padStart(2, "0") : "0:00";
+    const render = () => {
+      if (audio.duration) fillEl.style.width = (audio.currentTime / audio.duration * 100) + "%";
+      time.textContent = fmt(audio.currentTime) + " / " + fmt(audio.duration);
+    };
+    btn.textContent = "▶";
+    btn.addEventListener("click", () => {
+      if (audio.paused) {
+        audios.forEach(a => { if (a !== audio) { a.pause(); a.dispatchEvent(new Event("forcestop")); } });
+        audio.play();
+      } else audio.pause();
+    });
+    audio.addEventListener("play", () => btn.textContent = "❚❚");
+    audio.addEventListener("pause", () => { btn.textContent = "▶"; render(); });
+    audio.addEventListener("ended", () => { btn.textContent = "▶"; fillEl.style.width = "0"; audio.currentTime = 0; });
+    audio.addEventListener("timeupdate", render);
+    audio.addEventListener("loadedmetadata", render);
+    track.addEventListener("click", e => {
+      if (!audio.duration) return;
+      const r = track.getBoundingClientRect();
+      audio.currentTime = (e.clientX - r.left) / r.width * audio.duration;
+    });
+  });
+
+  // copy buttons
+  document.querySelectorAll(".rawlatex").forEach(row => {
+    const btn = row.querySelector(".copy");
+    const text = row.querySelector("code").textContent;
+    btn.addEventListener("click", () => {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = "copied";
+        setTimeout(() => btn.textContent = "copy", 1200);
+      });
+    });
+  });
+});
+</script>
+</body>
+</html>
