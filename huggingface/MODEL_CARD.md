@@ -111,5 +111,6 @@ Three-layer protocol (all reproducible from the repo):
 
 ## Links
 
-- Code, data generators, evaluation scripts and a live demo:
+- Live demo: https://demo.latex2voice.dev
+- Code, data generators, evaluation scripts:
   https://github.com/pphu0803/latex2voice
